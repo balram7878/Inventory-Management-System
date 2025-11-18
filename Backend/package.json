@@ -1,0 +1,23 @@
+{
+  "name": "inventory-management-system",
+  "version": "1.0.0",
+  "description": "this package is for inventory management system",
+  "homepage": "https://github.com/balram7878/Inventory-Management-System#readme",
+  "bugs": {
+    "url": "https://github.com/balram7878/Inventory-Management-System/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/balram7878/Inventory-Management-System.git"
+  },
+  "license": "ISC",
+  "author": "Balram Meena",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
