@@ -1,6 +1,6 @@
 const express = require("express");
-const sql = require("../../Database/postgres");
-const redisClient = require("../../Database/redis");
+const sql = require("../../Database/config/postgres");
+const redisClient = require("../../Database/config/redis");
 require("dotenv").config();
 
 const app = express();
