@@ -1,15 +1,14 @@
 const express = require("express");
-const sql = require("../../Database/config/postgres");
 const redisClient = require("../../Database/config/redis");
 const authRouter=require("../../domains/auth/auth.routes");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 
 const app = express();
 
-app.use((req, res) => {
-  res.send("this is from server");
-});
+app.use(express.json());
+app.use(cookieParser());
 
 app.use("/auth",authRouter);
 

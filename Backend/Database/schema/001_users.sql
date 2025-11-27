@@ -1,14 +1,11 @@
+-- 001_users.sql
 
-CREATE TABLE users{
-
+CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
-    name text NOT NULL CHECK(length(name)>=3),
-    email TEXT NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     phone TEXT,
-    role text NOT NULL CHECK (role in ('admin','customer')),
-    created_at TIMESTAMP DEFAULT now()
-
-
-
-    
-};
+    role TEXT NOT NULL CHECK (role IN ('admin', 'customer')),
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
