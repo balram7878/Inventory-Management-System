@@ -2,34 +2,40 @@ const sql = require("../../Database/config/postgres");
 
 const addCategory = async (req, res) => {
   try {
-    const { category_name } = req.body;
+    if (!req.body || Object.keys(req.body).length === 0)
+      return res.status(400).json({ message: "please provide category details" });
 
-    if (!category_name)
-      return res.status(400).json({ error: "category_name is required" });
+    const categories = Array.isArray(req.body) ? req.body : [req.body];
 
-    const exists = await sql`
-      SELECT EXISTS (
-        SELECT 1 FROM categories WHERE category_name = ${category_name}
-      ) AS exists;
-    `;
+    const names = categories.map(c =>
+      typeof c === "string" ? c : c.category_name
+    );
 
-    if (exists[0].exists)
-      return res.status(409).json({ error: "Category already exists" });
+    const validNames = names.filter(Boolean);
 
-    const category = await sql`
+    if (validNames.length === 0)
+      return res.status(400).json({ message: "No valid category names provided" });
+
+    const uniqueNames = [...new Set(validNames)];
+
+    const result = await sql`
       INSERT INTO categories (category_name)
-      VALUES (${category_name})
+      VALUES ${sql(uniqueNames.map(n => [n]))}
+      ON CONFLICT (category_name) DO NOTHING
       RETURNING *;
     `;
 
     res.status(201).json({
-      message: "Category added successfully",
-      category: category[0],
+      message: `${result.length} new category(s) added`,
+      added: result,
+      skipped: uniqueNames.length - result.length, // duplicates skipped
     });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 const deleteCategory = async (req, res) => {
   try {

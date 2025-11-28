@@ -1,23 +1,48 @@
-const sql = require("../../Database/config/postgres"); 
+const sql = require("../../Database/config/postgres");
 
 const addProduct = async (req, res) => {
   try {
-
-    const { name, category_id, price, quantity, reorder_value } = req.body;
-
-    if (!name || !category_id || !price || !quantity || !reorder_value) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        error: "Please provide product details",
+      });
     }
 
-    const product = await sql`
+    const products = Array.isArray(req.body) ? req.body : [req.body];
+
+ 
+    for (const p of products) {
+      if (
+        !p.name ||
+        !p.category_id ||
+        !p.price ||
+        !p.quantity ||
+        !p.reorder_value
+      ) {
+        return res.status(400).json({
+          error: "Each product must have name, category_id, price, quantity, reorder_value",
+        });
+      }
+    }
+
+    
+    const result = await sql`
       INSERT INTO products (name, category_id, price, quantity, reorder_value)
-      VALUES (${name}, ${category_id}, ${price}, ${quantity}, ${reorder_value})
+      VALUES ${sql(
+        products.map((p) => [
+          p.name,
+          p.category_id,
+          p.price,
+          p.quantity,
+          p.reorder_value,
+        ])
+      )}
       RETURNING *;
     `;
 
     res.status(201).json({
-      message: "Product added successfully",
-      product: product[0],
+      message: `${result.length} product(s) added successfully`,
+      products: result,
     });
 
   } catch (err) {
@@ -25,10 +50,9 @@ const addProduct = async (req, res) => {
   }
 };
 
-
 const deleteProduct = async (req, res) => {
   try {
-    const { product_id } = req.body; 
+    const { product_id } = req.body;
 
     if (!product_id)
       return res.status(400).json({ error: "product_id required" });
@@ -43,12 +67,10 @@ const deleteProduct = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
 
     res.status(200).json({ message: "Product deleted", product: deleted[0] });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 const getProduct = async (req, res) => {
   try {
@@ -67,12 +89,10 @@ const getProduct = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
 
     res.status(200).json(product[0]);
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 const getAllProducts = async (req, res) => {
   try {
@@ -82,12 +102,10 @@ const getAllProducts = async (req, res) => {
     `;
 
     res.status(200).json(products);
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 const updateProduct = async (req, res) => {
   try {
@@ -116,7 +134,6 @@ const updateProduct = async (req, res) => {
       message: "Product updated successfully",
       product: updated[0],
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
