@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 
 router.post("/add-category", adminValidation, addCategory);
-router.delete("/delete-category", adminValidation, deleteCategory);
+router.delete("/delete-category/:id", adminValidation, deleteCategory);
 router.put("/update-category-details", adminValidation, updateCategoryDetails);
 router.get("/get-all-category", getAllCategory);
 

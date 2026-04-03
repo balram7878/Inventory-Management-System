@@ -78,7 +78,7 @@ const updateCartItem = async (req, res) => {
 const removeFromCart = async (req, res) => {
   try {
     const user_id = req.user.sub;
-    const { product_id } = req.body;
+    const product_id  = req.params.id;
 
     if (!product_id)
       return res.status(400).json({ error: "product_id required" });

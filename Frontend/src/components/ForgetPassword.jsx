@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email").max(50, "Email too long"),

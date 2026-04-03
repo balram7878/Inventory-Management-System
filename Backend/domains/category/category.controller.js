@@ -39,7 +39,7 @@ const addCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
   try {
-    const { category_id } = req.body;
+    const category_id  = req.params.id;
 
     if (!category_id)
       return res.status(400).json({ error: "category_id is required" });

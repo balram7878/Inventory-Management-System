@@ -29,7 +29,6 @@ const adminValidation = async (req, res, next) => {
 
     req.user = payload;
     req.token = token;
-    req.role = payload.role;
        
     return next();
   } catch (err) {

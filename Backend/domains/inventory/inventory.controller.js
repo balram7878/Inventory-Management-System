@@ -1,5 +1,4 @@
 const sql = require("../../Database/config/postgres");
-
 const addProduct = async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -10,22 +9,53 @@ const addProduct = async (req, res) => {
 
     const products = Array.isArray(req.body) ? req.body : [req.body];
 
- 
+    if (products.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Empty product list is not allowed" });
+    }
+
     for (const p of products) {
       if (
         !p.name ||
         !p.category_id ||
-        !p.price ||
-        !p.quantity ||
-        !p.reorder_value
+        p.price == null ||
+        p.quantity == null ||
+        p.reorder_value == null
       ) {
         return res.status(400).json({
-          error: "Each product must have name, category_id, price, quantity, reorder_value",
+          error: "All fields are required",
+        });
+      }
+
+      if (p.price <= 0)
+        return res.status(400).json({ error: "Price must be greater than 0" });
+
+      if (p.quantity <= 0)
+        return res
+          .status(400)
+          .json({ error: "Quantity must be greater than 0" });
+
+      if (p.reorder_value <= 0)
+        return res
+          .status(400)
+          .json({ error: "Reorder value must be greater than 0" });
+    }
+
+    for (const p of products) {
+      const exists = await sql`
+        SELECT 1 FROM products
+        WHERE name = ${p.name} AND category_id = ${p.category_id}
+        LIMIT 1;
+      `;
+
+      if (exists.length > 0) {
+        return res.status(409).json({
+          error: `Duplicate product "${p.name}" in category ${p.category_id}`,
         });
       }
     }
 
-    
     const result = await sql`
       INSERT INTO products (name, category_id, price, quantity, reorder_value)
       VALUES ${sql(
@@ -44,7 +74,6 @@ const addProduct = async (req, res) => {
       message: `${result.length} product(s) added successfully`,
       products: result,
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -52,7 +81,7 @@ const addProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   try {
-    const { product_id } = req.body;
+    const product_id  = req.params.id;
 
     if (!product_id)
       return res.status(400).json({ error: "product_id required" });
@@ -74,7 +103,7 @@ const deleteProduct = async (req, res) => {
 
 const getProduct = async (req, res) => {
   try {
-    const { product_id } = req.query;
+    const product_id = req.params.id;
 
     if (!product_id)
       return res.status(400).json({ error: "product_id required" });
@@ -102,6 +131,22 @@ const getAllProducts = async (req, res) => {
     `;
 
     res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const totalProducts = async (req, res) => {
+  try {
+    const result = await sql`
+      SELECT COUNT(*) AS total_products, SUM(quantity) AS total_stock
+      FROM products;
+    `;
+
+    res.status(200).json({
+      total_products: result[0].total_products || 0,
+      total_stock: result[0].total_stock || 0,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -145,4 +190,5 @@ module.exports = {
   getProduct,
   getAllProducts,
   updateProduct,
+  totalProducts,
 };

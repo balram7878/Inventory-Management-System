@@ -1,12 +1,12 @@
 const express = require("express");
-const redisClient = require("../../Database/config/redis");
-const authRouter = require("../../domains/auth/auth.routes");
-const inventoryRouter = require("../../domains/inventory/inventory.routes");
-const categoryRouter = require("../../domains/category/category.routes");
-const cartRouter = require("../../domains/cart/cart.routes");
-const orderRouter = require("../../domains/order/order.routes");
-const orderItemsRouter = require("../../domains/order_items/order_items.routes");
-const paymentRouter = require("../../domains/payment/payment.routes");
+const redisClient = require("./Database/config/redis");
+const authRouter = require("./domains/auth/auth.routes");
+const inventoryRouter = require("./domains/inventory/inventory.routes");
+const categoryRouter = require("./domains/category/category.routes");
+const cartRouter = require("./domains/cart/cart.routes");
+const orderRouter = require("./domains/order/order.routes");
+const orderItemsRouter = require("./domains/order_items/order_items.routes");
+const paymentRouter = require("./domains/payment/payment.routes");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
