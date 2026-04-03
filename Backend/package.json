@@ -13,6 +13,9 @@
   "license": "ISC",
   "author": "Balram Meena",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18 <=22"
+  },
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",

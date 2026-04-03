@@ -119,7 +119,7 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
 
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const clientUrl = process.env.CLIENT_URL || "https://inventory-management-system-neelam.vercel.app";
     const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
     return res.status(200).json({
