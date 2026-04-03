@@ -1,1 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
+
 @import "tailwindcss";
+
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	--app-bg: #020617;
+	--app-text: #e2e8f0;
+}
+
+body {
+	margin: 0;
+	font-family: "Manrope", "Trebuchet MS", sans-serif;
+	background: var(--app-bg);
+	color: var(--app-text);
+}

@@ -1,0 +1,93 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api/client";
+
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (event) => {
+    setFormData((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const { data } = await api.post("/login", formData);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/dashboard");
+    } catch (apiError) {
+      setError(apiError.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 p-4">
+      <div className="w-full max-w-md rounded-3xl border border-blue-700/40 bg-gradient-to-b from-slate-900 to-black p-8 shadow-2xl">
+        <h1 className="mb-2 text-2xl font-bold text-amber-300">Welcome Back</h1>
+        <p className="mb-6 text-sm text-slate-300">Sign in to manage your inventory</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-200">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-blue-700 bg-slate-900 px-3 py-2 text-slate-100 focus:border-cyan-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-200">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full rounded-xl border border-blue-700 bg-slate-900 px-3 py-2 text-slate-100 focus:border-cyan-500 focus:outline-none"
+            />
+            <div className="mt-2 text-right">
+              <Link to="/forgot-password" className="text-sm font-medium text-cyan-700 hover:text-cyan-600">
+                Forgot Password?
+              </Link>
+            </div>
+          </div>
+
+          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-amber-500 px-4 py-2 font-medium text-slate-900 hover:bg-amber-400 disabled:opacity-60"
+          >
+            {loading ? "Signing in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-sm text-slate-300">
+          New user?{" "}
+          <Link to="/signup" className="font-semibold text-cyan-700 hover:text-cyan-600">
+            Create an account
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;

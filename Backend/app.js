@@ -1,37 +1,59 @@
 const express = require("express");
-const redisClient = require("./Database/config/redis");
-const authRouter = require("./domains/auth/auth.routes");
-const inventoryRouter = require("./domains/inventory/inventory.routes");
-const categoryRouter = require("./domains/category/category.routes");
-const cartRouter = require("./domains/cart/cart.routes");
-const orderRouter = require("./domains/order/order.routes");
-const orderItemsRouter = require("./domains/order_items/order_items.routes");
-const paymentRouter = require("./domains/payment/payment.routes");
-const cookieParser = require("cookie-parser");
-require("dotenv").config();
+const cors = require("cors");
+const dotenv = require("dotenv");
+const connectDB = require("./Database/config/db");
+const authRoutes = require("./src/routes/auth.routes");
+const productRoutes = require("./src/routes/product.routes");
+const inventoryRoutes = require("./src/routes/inventory.routes");
+const dashboardRoutes = require("./src/routes/dashboard.routes");
+const orderRoutes = require("./src/routes/order.routes");
+const cartRoutes = require("./src/routes/cart.routes");
+const customerRoutes = require("./src/routes/customer.routes");
+const supplierRoutes = require("./src/routes/supplier.routes");
+const { notFound, errorHandler } = require("./src/middleware/error.middleware");
+
+dotenv.config();
 
 const app = express();
 
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
-app.use(cookieParser());
 
-app.use("/auth", authRouter);
-app.use("/inventory", inventoryRouter);
-app.use("/inventory-categories", categoryRouter);
-app.use("/cart", cartRouter);
-app.use("/order", orderRouter);
-app.use("/order-items", orderItemsRouter);
-app.use("/payment", paymentRouter);
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Inventory API running" });
+});
 
-const initializeConnections = async () => {
+app.use("/", authRoutes);
+app.use("/products", productRoutes);
+app.use("/inventory", inventoryRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/orders", orderRoutes);
+app.use("/cart", cartRoutes);
+app.use("/customers", customerRoutes);
+app.use("/suppliers", supplierRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
+
+const initializeServer = async () => {
   try {
-    await redisClient.connect();
-    app.listen(process.env.PORT, () => {
-      console.log("Listening at ", process.env.PORT);
+    await connectDB();
+    console.log("Connected to MongoDB");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
   }
 };
 
-initializeConnections();
+initializeServer();
