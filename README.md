@@ -13,6 +13,7 @@ This project is a beginner-friendly MERN stack MVP for inventory management.
 - Dashboard stats (total products, low stock, total orders, total sales)
 - Basic Order, Customer, and Supplier management endpoints
 - Frontend pages: Login, Dashboard, Product Management
+updated
 
 ## Run Backend
 1. Open terminal in `Backend`
