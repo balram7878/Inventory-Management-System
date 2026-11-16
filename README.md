@@ -93,7 +93,7 @@ Important: Do not set `node app.js` as the Build Command at repo root. `app.js` 
 - Set frontend env variable:
    - `VITE_API_BASE_URL=https://inventory-management-system-akoi.onrender.com`
 
-This prevents the "No Output Directory named build" error.
+This prevents the "No Output Directory named build" error .
 
 ### Keep Render Awake Every 5 Minutes
 - Added GitHub Actions workflow at `.github/workflows/keep-render-awake.yml`.
